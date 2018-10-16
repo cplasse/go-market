@@ -20,18 +20,18 @@ export class ShoppingListsComponent implements OnInit {
   constructor(private fb: FormBuilder) {
     this.lists = [];
     this.deleteAction = false;
-    this.editAction = true;
+    this.editAction = false;
     this.onNewList();
   }
 
   ngOnInit() {
     this.formLists = new FormGroup(this.fb.group({
       name: [this.currentList.name, [
-        Validators.maxLength(5),
+        Validators.maxLength(16),
         Validators.required
       ]],
       description: [this.currentList.description, [
-        Validators.maxLength(5),
+        Validators.maxLength(24),
         Validators.required
       ]]
     }).controls, { updateOn: 'blur' });
@@ -99,5 +99,15 @@ export class ShoppingListsComponent implements OnInit {
       return this.onNewList();
     }
     return this.currentList = this.lists[0];
+  }
+
+  OnEditSubmit(): boolean {
+    if (this.formLists.valid) {
+      this.currentList.name = this.formLists.get('name').value;
+      this.currentList.description = this.formLists.get('description').value;
+      this.onToogleEdit();
+      return true;
+    }
+    return false;
   }
 }

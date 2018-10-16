@@ -20,13 +20,22 @@
 
 <ng-template #shoppingListEditor>
 
-  <form [formGroup]="formLists">
-    <mat-form-field>
+  <form [formGroup]="formLists" (ngSubmit)="OnEditSubmit()" fxLayoutAlign="default center" fxFlex>
+    <mat-form-field fxHide.xs>
       <input matInput formControlName="name">
       <mat-error>Invalide</mat-error>
     </mat-form-field>
+    <h1 fxLayoutAlign="center center" fxFlex>
+      <mat-form-field fxFlex="60" [style.textAlign]="'center'">
+        <input matInput formControlName="description">
+        <mat-error>Invalide</mat-error>
+      </mat-form-field>
+    </h1>
+    <button mat-icon-button>
+      <mat-icon>check</mat-icon>
+    </button>
   </form>
-  
+
 </ng-template>
 
 <mat-menu #menu>
@@ -35,6 +44,6 @@
     <span>New</span>
   </button>
   <button mat-menu-item *ngFor="let value of lists" (click)="onSetCurrentList(value)">
-    <span>{{ currentList.name }}</span>
+    <span>{{ value.name }}</span>
   </button>
 </mat-menu>
