@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ShoppingList } from '../shared/models/shopping-list.model';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'shopping-lists',
@@ -9,18 +10,31 @@ import { ShoppingList } from '../shared/models/shopping-list.model';
 export class ShoppingListsComponent implements OnInit {
 
   title: string;
-  deleteAction: boolean
+  deleteAction: boolean;
+  editAction: boolean;
 
+  formLists: FormGroup;
   lists: ShoppingList[];
   currentList: ShoppingList;
 
-  constructor() {
+  constructor(private fb: FormBuilder) {
     this.lists = [];
     this.deleteAction = false;
+    this.editAction = true;
     this.onNewList();
   }
 
   ngOnInit() {
+    this.formLists = this.fb.group({
+      name: [this.currentList.name, [
+        Validators.maxLength(5),
+        Validators.required
+      ]],
+      description: [this.currentList.description, [
+        Validators.maxLength(5),
+        Validators.required
+      ]]
+    });
   }
 
   get() {
@@ -58,10 +72,16 @@ export class ShoppingListsComponent implements OnInit {
   }
 
   onToogleDelete() {
-    this.deleteAction = !this.deleteAction;
+    return this.deleteAction = !this.deleteAction;
+  }
+
+  onToogleEdit() {
+
+    return this.editAction = !this.editAction;
   }
 
   onDeleteList(list: ShoppingList = null): ShoppingList {
+    this.onToogleDelete();
     if (!list) {
       list = this.currentList;
     }

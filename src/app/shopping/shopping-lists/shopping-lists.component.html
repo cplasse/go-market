@@ -1,23 +1,36 @@
 <mat-toolbar color="primary" fxLayout="row">
   <button mat-icon-button [matMenuTriggerFor]="menu">
-      <mat-icon>more_vert</mat-icon>
+    <mat-icon>more_vert</mat-icon>
   </button>
-  <mat-menu #menu>
-      <button mat-menu-item (click)="onNewList()">
-          <mat-icon>add</mat-icon>
-          <span>New</span>
-      </button>
-      <button mat-menu-item *ngFor="let value of lists" (click)="onSetCurrentList(value)">
-        <span>{{ currentList.name }}</span>
-      </button>
-    </mat-menu>
 
-    <span> {{ currentList.name }}</span>
-          
-    <h1 fxLayoutAlign="center center" fxFlex (click)="onToogleDelete()"> {{ currentList.description }}</h1>
+  <div *ngIf="!editAction else shoppingListEditor" fxLayoutAlign="default center" fxFlex>
+    <span fxHide.xs> {{ currentList.name }}</span>
 
-    <mat-icon *ngIf="deleteAction" (click) = "onDeleteList()">delete</mat-icon>
+    <h1 fxLayoutAlign="center center" fxFlex>
+      <span (click)="onToogleDelete()">{{ currentList.description }}</span>
+    </h1>
+    <button mat-icon-button *ngIf="deleteAction" (click)="onDeleteList()">
+      <mat-icon>delete</mat-icon>
+    </button>
+    <button mat-icon-button *ngIf="!deleteAction && !editAction" (click)="onToogleEdit()">
+      <mat-icon>edit</mat-icon>
+    </button>
+  </div>
 </mat-toolbar>
 
+<ng-template #shoppingListEditor>
 
+  <input type="text" [(ngModel)]="currentList.name" />
+  <span> {{ currentList.name }}</span>
 
+</ng-template>
+
+<mat-menu #menu>
+  <button mat-menu-item (click)="onNewList()">
+    <mat-icon>add</mat-icon>
+    <span>New</span>
+  </button>
+  <button mat-menu-item *ngFor="let value of lists" (click)="onSetCurrentList(value)">
+    <span>{{ currentList.name }}</span>
+  </button>
+</mat-menu>
