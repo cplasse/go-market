@@ -1,0 +1,13 @@
+<button mat-icon-button [matMenuTriggerFor]="menu">
+  <mat-icon>more_vert</mat-icon>
+</button>
+
+<mat-menu #menu>
+  <button mat-menu-item (click)="onNewList()">
+    <mat-icon>add</mat-icon>
+    <span>New</span>
+  </button>
+  <button mat-menu-item *ngFor="let value of lists" (click)="onSetCurrentList(value)">
+    <span>{{ value.name }}</span>
+  </button>
+</mat-menu>

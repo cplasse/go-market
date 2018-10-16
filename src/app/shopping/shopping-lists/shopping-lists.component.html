@@ -1,7 +1,6 @@
 <mat-toolbar color="primary" fxLayout="row">
-  <button mat-icon-button [matMenuTriggerFor]="menu">
-    <mat-icon>more_vert</mat-icon>
-  </button>
+
+  <shopping-lists-menu [lists]="lists" (onNewListEvent)="onNewList()" (onSetCurrentListEvent)="onSetCurrentList($event)"></shopping-lists-menu>
 
   <div *ngIf="!editAction else shoppingListEditor" fxLayoutAlign="default center" fxFlex>
     <span fxHide.xs> {{ currentList.name }}</span>
@@ -18,32 +17,13 @@
   </div>
 </mat-toolbar>
 
-<ng-template #shoppingListEditor>
-
-  <form [formGroup]="formLists" (ngSubmit)="OnEditSubmit()" fxLayoutAlign="default center" fxFlex>
-    <mat-form-field fxHide.xs>
-      <input matInput formControlName="name">
-      <mat-error>Invalide</mat-error>
-    </mat-form-field>
-    <h1 fxLayoutAlign="center center" fxFlex>
-      <mat-form-field fxFlex="60" [style.textAlign]="'center'">
-        <input matInput formControlName="description">
-        <mat-error>Invalide</mat-error>
-      </mat-form-field>
-    </h1>
-    <button mat-icon-button>
-      <mat-icon>check</mat-icon>
-    </button>
-  </form>
-
-</ng-template>
-
-<mat-menu #menu>
-  <button mat-menu-item (click)="onNewList()">
-    <mat-icon>add</mat-icon>
-    <span>New</span>
-  </button>
+<div>
   <button mat-menu-item *ngFor="let value of lists" (click)="onSetCurrentList(value)">
     <span>{{ value.name }}</span>
   </button>
-</mat-menu>
+</div>
+
+<ng-template #shoppingListEditor>
+  <shopping-lists-editor [currentList]="currentList" (onToogleEditEvent)="onToogleEdit()" fxLayoutAlign="default center"
+    fxFlex></shopping-lists-editor>
+</ng-template>

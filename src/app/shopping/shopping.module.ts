@@ -5,6 +5,8 @@ import { ProductsSearchComponent } from './products-search/products-search.compo
 import { ProductsListComponent } from './products-list/products-list.component';
 import { ShoppingComponent } from './shopping.component';
 import { SharedModule } from '../shared/shared.module';
+import { ShoppingListsMenuComponent } from './shopping-lists/shopping-lists-menu/shopping-lists-menu.component';
+import { ShoppingListsEditorComponent } from './shopping-lists/shopping-lists-editor/shopping-lists-editor.component';
 
 @NgModule({
   imports: [
@@ -16,6 +18,8 @@ import { SharedModule } from '../shared/shared.module';
     ShoppingListsComponent,
     ProductsSearchComponent,
     ProductsListComponent,
+    ShoppingListsMenuComponent,
+    ShoppingListsEditorComponent,
   ],
   exports: [
     ShoppingComponent

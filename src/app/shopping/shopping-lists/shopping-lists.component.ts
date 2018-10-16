@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { ShoppingList } from '../shared/models/shopping-list.model';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 @Component({
   selector: 'shopping-lists',
@@ -13,11 +12,10 @@ export class ShoppingListsComponent implements OnInit {
   deleteAction: boolean;
   editAction: boolean;
 
-  formLists: FormGroup;
   lists: ShoppingList[];
   currentList: ShoppingList;
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     this.lists = [];
     this.deleteAction = false;
     this.editAction = false;
@@ -25,22 +23,7 @@ export class ShoppingListsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.formLists = new FormGroup(this.fb.group({
-      name: [this.currentList.name, [
-        Validators.maxLength(16),
-        Validators.required
-      ]],
-      description: [this.currentList.description, [
-        Validators.maxLength(24),
-        Validators.required
-      ]]
-    }).controls, { updateOn: 'blur' });
 
-    this.formLists.get('name').valueChanges.subscribe(
-      (data) => {
-        console.log(data);
-      }
-    )
   }
 
   get() {
@@ -70,11 +53,18 @@ export class ShoppingListsComponent implements OnInit {
 
   onNewList(): ShoppingList {
     const size = this.post();
+    if (this.editAction) {
+      this.onToogleEdit();
+    }
     return this.currentList = this.lists[size - 1];
   }
 
   onSetCurrentList(list: ShoppingList): ShoppingList {
-    return this.currentList = list;
+    this.currentList = list;
+    if (this.editAction) {
+      this.onToogleEdit();
+    }
+    return this.currentList;
   }
 
   onToogleDelete() {
@@ -82,7 +72,6 @@ export class ShoppingListsComponent implements OnInit {
   }
 
   onToogleEdit() {
-
     return this.editAction = !this.editAction;
   }
 
@@ -99,15 +88,5 @@ export class ShoppingListsComponent implements OnInit {
       return this.onNewList();
     }
     return this.currentList = this.lists[0];
-  }
-
-  OnEditSubmit(): boolean {
-    if (this.formLists.valid) {
-      this.currentList.name = this.formLists.get('name').value;
-      this.currentList.description = this.formLists.get('description').value;
-      this.onToogleEdit();
-      return true;
-    }
-    return false;
   }
 }
