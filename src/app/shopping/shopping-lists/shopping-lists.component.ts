@@ -25,7 +25,7 @@ export class ShoppingListsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.formLists = this.fb.group({
+    this.formLists = new FormGroup(this.fb.group({
       name: [this.currentList.name, [
         Validators.maxLength(5),
         Validators.required
@@ -34,7 +34,13 @@ export class ShoppingListsComponent implements OnInit {
         Validators.maxLength(5),
         Validators.required
       ]]
-    });
+    }).controls, { updateOn: 'blur' });
+
+    this.formLists.get('name').valueChanges.subscribe(
+      (data) => {
+        console.log(data);
+      }
+    )
   }
 
   get() {
@@ -44,7 +50,7 @@ export class ShoppingListsComponent implements OnInit {
   post(list: ShoppingList = null): number {
     if (list) {
       return this.lists.push(list);
-    } 
+    }
     list = {
       name: `List ${Date.now()}`,
       theme: 'test',
@@ -64,7 +70,7 @@ export class ShoppingListsComponent implements OnInit {
 
   onNewList(): ShoppingList {
     const size = this.post();
-    return this.currentList = this.lists[size-1];
+    return this.currentList = this.lists[size - 1];
   }
 
   onSetCurrentList(list: ShoppingList): ShoppingList {
