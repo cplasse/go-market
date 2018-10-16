@@ -1,29 +1,33 @@
-<mat-toolbar color="primary" fxLayout="row">
+<mat-progress-bar mode="query" *ngIf="!currentList else shoppingLists"></mat-progress-bar>
 
-  <shopping-lists-menu [lists]="lists" (onNewListEvent)="onNewList()" (onSetCurrentListEvent)="onSetCurrentList($event)"></shopping-lists-menu>
+<ng-template #shoppingLists>
+  <mat-toolbar color="primary" fxLayout="row">
 
-  <div *ngIf="!editAction else shoppingListEditor" fxLayoutAlign="default center" fxFlex>
-    <span fxHide.xs> {{ currentList.name }}</span>
+    <shopping-lists-menu (onNewListEvent)="onNewList()" (onSetCurrentListEvent)="onSetCurrentList($event)"></shopping-lists-menu>
 
-    <h1 fxLayoutAlign="center center" fxFlex>
-      <span (click)="onToogleDelete()">{{ currentList.description }}</span>
-    </h1>
-    <button mat-icon-button *ngIf="deleteAction" (click)="onDeleteList()">
-      <mat-icon>delete</mat-icon>
-    </button>
-    <button mat-icon-button *ngIf="!deleteAction && !editAction" (click)="onToogleEdit()">
-      <mat-icon>edit</mat-icon>
+    <div *ngIf="!editAction else shoppingListEditor" fxLayoutAlign="default center" fxFlex>
+      <span fxHide.xs> {{ currentList.name }}</span>
+
+      <h1 fxLayoutAlign="center center" fxFlex>
+        <span (click)="onToogleDelete()">{{ currentList.description }}</span>
+      </h1>
+      <button mat-icon-button *ngIf="deleteAction" (click)="onDeleteList()">
+        <mat-icon>delete</mat-icon>
+      </button>
+      <button mat-icon-button *ngIf="!deleteAction && !editAction" (click)="onToogleEdit()">
+        <mat-icon>edit</mat-icon>
+      </button>
+    </div>
+  </mat-toolbar>
+
+  <div>
+    <button mat-menu-item *ngFor="let value of lists" (click)="onSetCurrentList(value)">
+      <span>{{ value.name }}</span>
     </button>
   </div>
-</mat-toolbar>
 
-<div>
-  <button mat-menu-item *ngFor="let value of lists" (click)="onSetCurrentList(value)">
-    <span>{{ value.name }}</span>
-  </button>
-</div>
-
-<ng-template #shoppingListEditor>
-  <shopping-lists-editor [currentList]="currentList" (onToogleEditEvent)="onToogleEdit()" fxLayoutAlign="default center"
-    fxFlex></shopping-lists-editor>
+  <ng-template #shoppingListEditor>
+    <shopping-lists-editor [currentList]="currentList" (onToogleEditEvent)="onToogleEdit()" fxLayoutAlign="default center"
+      fxFlex></shopping-lists-editor>
+  </ng-template>
 </ng-template>
