@@ -3,6 +3,8 @@ import { ShoppingList } from '../shared/models/shopping-list.model';
 import { ShoppingListsService } from '../shared/services/shopping-lists.service';
 import { ShoppingListsApiService } from '../shared/services/shopping-lists-api.service';
 
+import { MatSnackBar } from '@angular/material/snack-bar';
+
 @Component({
   selector: 'shopping-lists',
   templateUrl: './shopping-lists.component.html',
@@ -18,7 +20,9 @@ export class ShoppingListsComponent implements OnInit {
 
   currentList: ShoppingList;
 
-  constructor(private shoppingListsService: ShoppingListsService, private shoppingListsServiceApi: ShoppingListsApiService) {
+  constructor(private shoppingListsService: ShoppingListsService, 
+    private shoppingListsServiceApi: ShoppingListsApiService,
+    private snackBar: MatSnackBar) {
     this.deleteAction = false;
     this.editAction = false;
   }
@@ -32,6 +36,19 @@ export class ShoppingListsComponent implements OnInit {
             this.findCurrentList();
           }
         );
+      },
+      error => {
+        const that = this;
+        const ref = this.snackBar.open('Shopping lists not available', 'Retry', {
+          duration: 3000
+        });
+        ref.onAction().subscribe(e => {
+          this.ngOnInit.call(that);
+
+        })
+        console.log(error);
+        this.lists = [];
+        this.onNewList();
       }
     );
   }
