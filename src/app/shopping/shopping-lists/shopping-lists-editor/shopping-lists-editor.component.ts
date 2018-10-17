@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, EventEmitter, Output } from '@angular/core';
 import { FormGroup, Validators, FormBuilder } from '@angular/forms';
 import { ShoppingList } from '../../shared/models/shopping-list.model';
+import { ShoppingListsService } from '../../shared/services/shopping-lists.service';
 
 @Component({
   selector: 'shopping-lists-editor',
@@ -15,7 +16,7 @@ export class ShoppingListsEditorComponent implements OnInit {
 
   @Output() onToogleEditEvent: EventEmitter<any>;
 
-  constructor(private fb: FormBuilder) { 
+  constructor(private fb: FormBuilder, private shoppingListService: ShoppingListsService) { 
     this.onToogleEditEvent = new EventEmitter();
   }
 
@@ -42,6 +43,7 @@ export class ShoppingListsEditorComponent implements OnInit {
     if (this.formLists.valid) {
       this.currentList.name = this.formLists.get('name').value;
       this.currentList.description = this.formLists.get('description').value;
+      this.shoppingListService.push();
       this.onToogleEditEvent.emit();
       return true;
     }

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ShoppingList } from '../shared/models/shopping-list.model';
 import { ShoppingListsService } from '../shared/services/shopping-lists.service';
+import { ShoppingListsApiService } from '../shared/services/shopping-lists-api.service';
 
 @Component({
   selector: 'shopping-lists',
@@ -17,21 +18,30 @@ export class ShoppingListsComponent implements OnInit {
 
   currentList: ShoppingList;
 
-  constructor(private shoppingListsService: ShoppingListsService) {
-    this.lists = [];
+  constructor(private shoppingListsService: ShoppingListsService, private shoppingListsServiceApi: ShoppingListsApiService) {
     this.deleteAction = false;
     this.editAction = false;
   }
 
   ngOnInit() {
-    this.shoppingListsService.get().subscribe(
+    this.shoppingListsServiceApi.get().subscribe(
       async (lists: ShoppingList[]) => {
-        await (this.lists = lists);
-        if (!this.lists.length) {
-          this.onNewList();
-        }
+        this.shoppingListsService.put(await lists).subscribe(
+          (lists: ShoppingList[]) => {
+            this.lists = lists;
+            this.findCurrentList();
+          }
+        );
       }
     );
+  }
+
+  findCurrentList() {
+    if (!this.lists.length) {
+      this.onNewList();
+    } else {
+      this.currentList = this.lists[this.lists.length - 1];
+    }
   }
 
   onNewList(): void {
@@ -39,7 +49,10 @@ export class ShoppingListsComponent implements OnInit {
       this.onToogleEdit();
     }
     this.shoppingListsService.post().subscribe(
-      async (list: ShoppingList) => await (this.currentList = list)
+      async (list: ShoppingList) => {
+        this.currentList = await list;
+        this.shoppingListsService.push();
+      }
     );
   }
 
@@ -64,10 +77,9 @@ export class ShoppingListsComponent implements OnInit {
       list = this.currentList;
     }
     this.shoppingListsService.delete(list).subscribe(
-      async (list: ShoppingList) => {
-        !await this.lists.length
-          ? this.onNewList()
-          : this.currentList = this.lists[0];
+      (list: ShoppingList) => {
+        this.shoppingListsService.push();
+        this.findCurrentList();
       }
     )
   }

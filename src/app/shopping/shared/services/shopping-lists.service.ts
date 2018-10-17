@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ShoppingList } from '../models/shopping-list.model';
 import { of, Observable } from 'rxjs';
+import { ShoppingListsApiService } from './shopping-lists-api.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,12 +10,17 @@ export class ShoppingListsService {
 
   lists: ShoppingList[];
 
-  constructor() { 
+  constructor(private shoppingListApiService: ShoppingListsApiService) {
     this.lists = [];
   }
 
   get(): Observable<ShoppingList[]> {
     return of(this.lists);
+  }
+
+  push(): Observable<ShoppingList[]> {
+    this.shoppingListApiService.put(this.lists).subscribe();
+    return this.get();
   }
 
   post(list: ShoppingList = null): Observable<ShoppingList> {
@@ -31,7 +37,17 @@ export class ShoppingListsService {
     return this.post(list);
   }
 
-  put() {
+  put(lists: ShoppingList[]): Observable<ShoppingList[]> {
+    while (this.lists.length) {
+      this.lists.pop();
+    }
+    lists.forEach((list: ShoppingList) => {
+      if (list) {
+        this.post(list).subscribe();
+      }
+    }
+    );
+    return of(this.lists);
   }
 
   delete(list: ShoppingList): Observable<ShoppingList> {
