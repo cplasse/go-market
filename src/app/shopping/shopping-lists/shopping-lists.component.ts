@@ -1,9 +1,11 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ShoppingList } from '../shared/models/shopping-list.model';
 import { ShoppingListsService } from '../shared/services/shopping-lists.service';
 import { ShoppingListsApiService } from '../shared/services/shopping-lists-api.service';
 
 import { MatSnackBar } from '@angular/material/snack-bar';
+
 
 @Component({
   selector: 'shopping-lists',
@@ -22,7 +24,9 @@ export class ShoppingListsComponent implements OnInit {
 
   constructor(private shoppingListsService: ShoppingListsService,
     private shoppingListsServiceApi: ShoppingListsApiService,
-    private snackBar: MatSnackBar) {
+    private snackBar: MatSnackBar,
+    private route: ActivatedRoute,
+    private router: Router) {
     this.deleteAction = false;
     this.editAction = false;
   }
@@ -30,7 +34,6 @@ export class ShoppingListsComponent implements OnInit {
   ngOnInit() {
     this.shoppingListsServiceApi.get().subscribe(
       async (lists: ShoppingList[]) => {
-        console.log('success');
         this.shoppingListsService.put(await lists).subscribe(
           (lists: ShoppingList[]) => {
             this.lists = lists;
@@ -48,8 +51,6 @@ export class ShoppingListsComponent implements OnInit {
 
         })
         console.log(error);
-        this.lists = [];
-        this.onNewList();
       }
     );
   }
@@ -58,7 +59,19 @@ export class ShoppingListsComponent implements OnInit {
     if (!this.lists.length) {
       this.onNewList();
     } else {
-      this.currentList = this.lists[this.lists.length - 1];
+      const paramId = this.route.snapshot.paramMap.get("id");
+      const currentList = this.lists.find((list: ShoppingList) => btoa(list.name) === paramId);
+      this.currentList = currentList || this.lists[this.lists.length - 1];
+      this.navigateToList(this.currentList);
+    }
+  }
+
+  navigateToList(list: ShoppingList) {
+    const paramId = this.route.snapshot.paramMap.get("id");
+    const listId = btoa(list.name);
+    if (paramId !== listId) {
+      this.router.navigate([`lists/${listId}`]);
+      return;
     }
   }
 
@@ -69,7 +82,9 @@ export class ShoppingListsComponent implements OnInit {
     this.shoppingListsService.post().subscribe(
       async (list: ShoppingList) => {
         this.currentList = await list;
-        this.shoppingListsService.push();
+        this.shoppingListsService.push().subscribe((lists: ShoppingList[]) => {
+          this.navigateToList(this.currentList);
+        });
       }
     );
   }
@@ -78,7 +93,8 @@ export class ShoppingListsComponent implements OnInit {
     if (this.editAction) {
       this.onToogleEdit();
     }
-    return this.currentList = list;
+    this.navigateToList(this.currentList = list);
+    return this.currentList;
   }
 
   onToogleDelete() {
@@ -96,8 +112,9 @@ export class ShoppingListsComponent implements OnInit {
     }
     this.shoppingListsService.delete(list).subscribe(
       (list: ShoppingList) => {
-        this.shoppingListsService.push();
-        this.findCurrentList();
+        this.shoppingListsService.push().subscribe((lists: ShoppingList[]) => {
+          this.findCurrentList();
+        });
       }
     )
   }
