@@ -20,7 +20,7 @@ export class ShoppingListsComponent implements OnInit {
 
   currentList: ShoppingList;
 
-  constructor(private shoppingListsService: ShoppingListsService, 
+  constructor(private shoppingListsService: ShoppingListsService,
     private shoppingListsServiceApi: ShoppingListsApiService,
     private snackBar: MatSnackBar) {
     this.deleteAction = false;
@@ -30,6 +30,7 @@ export class ShoppingListsComponent implements OnInit {
   ngOnInit() {
     this.shoppingListsServiceApi.get().subscribe(
       async (lists: ShoppingList[]) => {
+        console.log('success');
         this.shoppingListsService.put(await lists).subscribe(
           (lists: ShoppingList[]) => {
             this.lists = lists;
