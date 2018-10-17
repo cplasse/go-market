@@ -29,32 +29,30 @@ export class ShoppingListsComponent implements OnInit {
     private router: Router) {
     this.deleteAction = false;
     this.editAction = false;
-    this.lists = [];
-    this.onNewList();
   }
 
   ngOnInit() {
-    // this.shoppingListsServiceApi.get().subscribe(
-    //   async (lists: ShoppingList[]) => {
-    //     this.shoppingListsService.put(await lists).subscribe(
-    //       (lists: ShoppingList[]) => {
-    //         this.lists = lists;
-    //         this.findCurrentList();
-    //       }
-    //     );
-    //   },
-    //   error => {
-    //     const that = this;
-    //     const ref = this.snackBar.open('Shopping lists not available', 'Retry', {
-    //       duration: 3000
-    //     });
-    //     ref.onAction().subscribe(e => {
-    //       this.ngOnInit.call(that);
+    this.shoppingListsServiceApi.get().subscribe(
+      async (lists: ShoppingList[]) => {
+        this.shoppingListsService.put(await lists).subscribe(
+          (lists: ShoppingList[]) => {
+            this.lists = lists;
+            this.findCurrentList();
+          }
+        );
+      },
+      error => {
+        const that = this;
+        const ref = this.snackBar.open('Shopping lists not available', 'Retry', {
+          duration: 3000
+        });
+        ref.onAction().subscribe(e => {
+          this.ngOnInit.call(that);
 
-    //     })
-    //     console.log(error);
-    //   }
-    // );
+        })
+        console.log(error);
+      }
+    );
   }
 
   findCurrentList() {
